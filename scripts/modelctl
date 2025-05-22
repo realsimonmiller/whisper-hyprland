@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# scripts/modelctl — download / list / switch Whisper models
+set -euo pipefail
+REPO="$HOME/whisper.cpp"
+MDIR="$REPO/models"
+CUR="$MDIR/ggml-current.bin"
+
+usage() { echo "Usage:  modelctl list | use <model-name> | dl <model-name>"; exit 1; }
+
+[[ $# -lt 1 ]] && usage
+cmd=${1}; shift || true
+
+case $cmd in
+  list)
+    echo "Available models in $MDIR:"
+    ls -1 $MDIR/ggml-*.bin 2>/dev/null | sed 's#.*/##'
+    [[ -L $CUR ]] && echo "Current -> $(readlink -f "$CUR")"
+    ;;
+  dl)
+    [[ $# -eq 1 ]] || usage
+    cd "$REPO"
+    ./models/download-ggml-model.sh "$1"
+    echo "Downloaded $1"
+    ;;
+  use)
+    [[ $# -eq 1 ]] || usage
+    file="$MDIR/ggml-$1.bin"
+    [[ -f $file ]] || { echo "Model not found, download first with: modelctl dl $1"; exit 1; }
+    ln -sf "$(basename "$file")" "$CUR"
+    echo "Now using $(readlink -f "$CUR")"
+    ;;
+  *)
+    usage ;;
+esac
+
