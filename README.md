@@ -14,4 +14,17 @@ Local speech-to-text (OpenAI Whisper) triggered by **Alt + Space**.
 git clone https://github.com/username/whisper-hyprland.git
 cd whisper-hyprland
 ./install.sh
+```
+
+
+
+### Key-binding
+
+`install.sh` automatically appends these lines to  
+`~/.config/hypr/hyprland.conf` (if they’re not already there):
+
+```ini
+bind  = ALT, SPACE, exec, ~/scripts/whisper-start.sh
+bindr = ALT, SPACE, exec, ~/scripts/whisper-stop.sh
+```
 
